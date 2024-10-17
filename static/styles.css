@@ -1,0 +1,26 @@
+body {
+    font-family: 'Arial', sans-serif;
+}
+
+#balance-display {
+    font-size: 20px;
+    font-weight: bold; /* Negrita para resaltar el balance */
+}
+
+.card-title {
+    margin-bottom: 10px; /* Espaciado entre el título y los campos */
+}
+
+/* Lista de transacciones */
+.list-group-item {
+    display: flex;
+    justify-content: space-between; /* Alinear contenido a la izquierda y derecha */
+}
+
+/* Estilo responsive */
+@media (max-width: 600px) {
+    #initial-balance-form,
+    #transaction-form {
+        width: 100%; /* Ancho total en pantallas pequeñas */
+    }
+}
