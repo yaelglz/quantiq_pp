@@ -5,83 +5,93 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
 
-app = FastAPI()  # Inicializa la aplicación FastAPI
+app = FastAPI()
 
-# Middleware para habilitar CORS (Cross-Origin Resource Sharing) que es necesario para permitir solicitudes desde un dominio diferente al de la API
+# Middleware para CORS que permite que la API sea consumida por cualquier origen
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Permite todas las direcciones
-    allow_credentials=True,  # Permite credenciales
-    allow_methods=["*"],  # Permite todos los métodos HTTP
-    allow_headers=["*"],  # Permite todos los encabezados
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-# Monta archivos estáticos para servir desde el directorio "static"
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="static"), name="static")  # Para montar archivos en la ruta /static
 
-# Base de datos simulada para almacenar transacciones
+# Simulación de base de datos
 transactions_db = []
-current_balance = 0  # Balance actual
-
-# Variables para rastrear el mayor gasto
+current_balance = 0
 max_expense = 0
 max_expense_date = ""
 
-# Modelo para transacciones, utilizando Pydantic para validación
+
+# Modelos
 class Transaction(BaseModel):
-    description: str  # Descripción de la transacción
-    amount: float     # Monto de la transacción
-    transaction_type: str  # Tipo de transacción: "ingreso" o "gasto"
-    date: str         # Fecha de la transacción
+    description: str
+    amount: float
+    transaction_type: str  # "ingreso" o "gasto"
+    date: str
 
-# Modelo para el balance inicial
+
 class InitialBalance(BaseModel):
-    balance: float    # Balance inicial
+    balance: float
 
-# Endpoint para establecer el balance inicial
+
+# Rutas para la aplicación financiera
 @app.post("/initial_balance/")
 async def set_initial_balance(balance: InitialBalance):
-    global current_balance  # Utiliza la variable global
-    current_balance = balance.balance  # Establece el balance actual
+    global current_balance
+    current_balance = balance.balance
     return {"message": "Balance inicial establecido", "balance": current_balance}
 
-# Endpoint para agregar una transacción
+
 @app.post("/transactions/")
 async def add_transaction(transaction: Transaction):
-    global current_balance, max_expense, max_expense_date  # Utiliza variables globales para actualizar el estado de la aplicación
-    transactions_db.append(transaction)  # Agrega la transacción a la base de datos
+    global current_balance, max_expense, max_expense_date
+    transactions_db.append(transaction)
 
-    # Actualiza el balance según el tipo de transacción
     if transaction.transaction_type == "ingreso":
-        current_balance += transaction.amount  # Suma al balance
+        current_balance += transaction.amount
     else:
-        current_balance -= transaction.amount  # Resta del balance
-
-        # Verifica si esta transacción es el mayor gasto
+        current_balance -= transaction.amount
         if transaction.amount > max_expense:
-            max_expense = transaction.amount  # Actualiza el mayor gasto
-            max_expense_date = transaction.date  # Guarda la fecha del mayor gasto
+            max_expense = transaction.amount
+            max_expense_date = transaction.date
 
-    return {"message": "Transacción añadida", "balance": current_balance}  # Devuelve el mensaje y el balance
+    return {"message": "Transacción añadida", "balance": current_balance}
 
-# Endpoint para obtener todas las transacciones
+
 @app.get("/transactions/", response_model=List[Transaction])
-async def get_transactions():
-    return transactions_db  # Devuelve la lista de transacciones
+async def get_transactions(sort: str = "default"):
+    if sort == "date":
+        # Ordenar por fecha (asumiendo que la fecha está en formato 'YYYY-MM-DD')
+        return sorted(transactions_db, key=lambda x: x.date)
+    elif sort == "amount":
+        # Ordenar por monto
+        return sorted(transactions_db, key=lambda x: x.amount)
+    else:
+        # Por defecto: devolver en el orden original
+        return transactions_db
 
-# Endpoint para obtener el balance actual
+
 @app.get("/balance/")
 async def get_balance():
-    return {"balance": current_balance}  # Devuelve el balance actual
+    return {"balance": current_balance}
 
-# Endpoint para obtener el mayor gasto registrado
+
 @app.get("/max_expense/")
 async def get_max_expense():
-    return {"max_expense": max_expense, "date": max_expense_date}  # Devuelve el mayor gasto y su fecha
+    return {"max_expense": max_expense, "date": max_expense_date}
 
-# Endpoint raíz para servir el archivo HTML principal
+
+# Rutas para servir las páginas HTML
 @app.get("/", response_class=HTMLResponse)
-async def read_root(request: Request):
-    with open("templates/index.html") as f:  # Abre el archivo HTML
-        return f.read()  # Devuelve el contenido del archivo
+async def read_home(request: Request):
+    with open("templates/index.html") as f:
+        return f.read()
 
+
+@app.get("/app", response_class=HTMLResponse)
+async def read_app(request: Request):
+    with open("templates/app.html") as f:
+        return f.read()

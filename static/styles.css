@@ -1,14 +1,90 @@
+/* Aplicar la fuente Montserrat a toda la aplicación */
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Montserrat', sans-serif;
+}
+.navbar {
+    background: rgb(245, 222, 179);
+}
+
+/* Mantener el espaciado interno de la sección */
+.container {
+    padding: 20px 0;
+}
+
+.home-background {
+    background-color: rgba(254, 196, 72, 0.1);
+}
+
+.highlight {
+    font-size: 3rem;
+    text-decoration: underline;
+    text-decoration-color: #e03f7f;
+    text-underline-offset: 10px;
+    color: black;
+    font-weight: bold;
+}
+
+.highlight:hover {
+    color: #e03f7f;
+    text-decoration-color: black;
+}
+
+.description {
+    font-size: 1.5rem;
+    color: #333;
+    font-weight: lighter;
+    line-height: 1.6;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.highlight-black {
+    background-color: mediumpurple;
+    color: #fff;
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+}
+
+.custom-btn {
+    background-color: #e03f7f;
+    font-size: 1.3rem;
+    color: white;
+    border: none;
+    border-radius: 0;
+    padding: 10px 20px;
+    box-shadow: 5px 0 10px rgba(0, 0, 0, 0.5);
+    transition: background-color 0.3s ease;
+}
+
+.custom-btn:hover {
+    background-color: black;
+    color: white;
 }
 
 #balance-display {
     font-size: 20px;
-    font-weight: bold; /* Negrita para resaltar el balance */
+    font-weight: bold;
+}
+
+.custom-btn-small {
+    background-color: #e03f7f;
+    font-size: 1.1rem;
+    color: white;
+    border: none;
+    border-radius: 0;
+    padding: 5px 10px;
+    box-shadow: 5px 0 10px rgba(0, 0, 0, 0.5);
+    transition: background-color 0.3s ease;
+}
+
+.custom-btn-small:hover {
+    background-color: black;
+    color: white;
 }
 
 .card-title {
-    margin-bottom: 10px; /* Espaciado entre el título y los campos */
+    margin-bottom: 10px;
 }
 
 /* Lista de transacciones */
